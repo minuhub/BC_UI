@@ -8,8 +8,8 @@
     "node_1": "nodemon --watch dev -e js dev/networkNode.js 3001 http://localhost:3001 temperature",
     "node_2": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 humidity",
     "node_3": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 wind",
-    "node_4": "nodemon --watch dev -e js dev/networkNode.js 3004 http://localhost:3004 condition",
-    "node_5": "nodemon --watch dev -e js dev/networkNode.js 3005 http://localhost:3005 "
+    "node_4": "nodemon --watch dev -e js dev/networkNode.js 3004 http://localhost:3004 rain",
+    "node_5": "nodemon --watch dev -e js dev/networkNode.js 3005 http://localhost:3005 cloud"
   },
   "author": "",
   "license": "ISC",

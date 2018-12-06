@@ -16,6 +16,7 @@ const device = new Blockchain();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// min~max까지 랜덤 수 생성.
 var generateRandom = function(min, max){
     var ranNum = Math.floor(Math.random()*(max-min+1))+min;
     return ranNum;
@@ -42,16 +43,22 @@ function leadingZeros(n, digits) {
 setInterval(function(){
     var data = null;
     if(name === 'temperature'){
-        data = generateRandom(1,15) + '˚';
+        data = generateRandom(0,15) + '˚C';
     }
     else if(name === 'humidity'){
-        data = generateRandom(1,100) + '%';
+        data = generateRandom(40,99) + '%';
     }
     else if(name === 'wind'){
-        data = generateRandom(1,15) + 'km/h';
+        data = generateRandom(10,25) + ' km/h';
     }
-    else if(name === 'condition'){
-        data= generateRandom(1,4);
+    else if(name === 'rain'){
+        data = generateRandom(0,100) + '%'
+    }
+    else if(name === 'cloud'){
+        data = generateRandom(20,80) + '%';
+    }
+    else{
+        console.log('device name error');
     }
     const requestOptions = {
         uri: device.currentNodeUrl + '/log/broadcast',
