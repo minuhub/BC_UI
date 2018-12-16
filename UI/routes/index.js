@@ -17,6 +17,17 @@ var pathname = "";
 var ext = "";
 /* GET home page. */
 router.get('/', function(request, response, next) { 
+var exec = require('child_process').exec;
+ 
+exec("ls", function (err, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+        console.log('error: ' + err);
+    }
+})
+
+
 console.log("inside") ;
 /** 현재 실행한 파일의 이름과 Path*/
 console.log('finaname : ' + __filename);

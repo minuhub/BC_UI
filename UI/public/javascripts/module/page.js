@@ -21,7 +21,7 @@ template_Page_Group:function(tem1,tem2,tem3){
           #setgrid{
           margin : 10px;
           display : grid;
-          grid-template-columns: 200px 1000px 1fr;
+          grid-template-columns: 200px 800px 800px;
           grid-gap: 10px; 
           }
           .setlistgrid{
@@ -29,6 +29,9 @@ template_Page_Group:function(tem1,tem2,tem3){
           display : grid;
           grid-template-columns: 10px 1fr 10px;
           }
+.chainLine{
+  border : 3px solid black;
+}
         </style>
         
         <script>
@@ -98,7 +101,8 @@ template_Page_Group:function(tem1,tem2,tem3){
 
 var linecount = 1;
 
-        function line_end(endpoint){ 
+        function line_end(point){
+        let endpoint =  "end"+point;
           if(started == 1){
             var tp = document.getElementById("div1");
             var elemRect = tp.getBoundingClientRect()
@@ -122,10 +126,9 @@ var linecount = 1;
             temps += " ";
             temps += startpoint;
             console.log(temps);
-            s += "<line id="+linecount +" x1="+x1 + " y1=" + y1 + " x2=" + x2 + " y2=" + y2 + " stroke="+"\'orange\'" +" stroke-width="+"\'3\'"+"></line>";
+            //s += "<line id="+linecount +" x1="+x1 + " y1=" + y1 + " x2=" + x2 + " y2=" + y2 + " stroke="+"'orange'" +" stroke-width="+"\'3\'"+"></line>";
+            s += \` <line id="\${linecount}" x1="\${x1}" y1="\${y1}" x2="\${x2}" y2="\${y2}" stroke="orange"></line> \`;
             
-            //s += "<line class=\""+endpoint + "\""+" x1="+x1 + " y1=" + y1 + " x2=" + x2 + " y2=" + y2 + " stroke="+"\'orange\'" +" stroke-width="+"\'3\'"+"></line>";
-            //s = "<line class=\""+ endpoint +" "+ startpoint+"\"" +" x1="+x1 + " y1=" + y1 + " x2=" + x2 + " y2=" + y2 + " stroke="+"\'orange\'" +" stroke-width="+"\'3\'"+"></line>";
             document.getElementById("svg1").innerHTML+= s;
 //console.log(document.getElementById("svg1").innerHTML);
             var t1 = document.getElementById(linecount);
@@ -133,6 +136,12 @@ var linecount = 1;
             t1.classList.add(startpoint);
             started = 0;
             linecount ++;
+
+//@@@@!@!@!@#!@#!@#
+            //for blockchain
+            let url = "Node_connecting/" +point ; 
+            fetch(url).then();
+            return false;
           }       
 
         }
@@ -142,7 +151,7 @@ var linecount = 1;
           console.log('end'+linename);
           var endname = document.getElementsByClassName('end'+linename)[i];
           var startname = document.getElementsByClassName('start'+linename)[i];
-                          
+
 //공통사용
           var tp = document.getElementById("div1");
           var elemRect = tp.getBoundingClientRect()
@@ -175,6 +184,91 @@ var linecount = 1;
             console.log(startname);
           }
         }
+
+function startNode(nodeName){
+    let url = "Node_setting/" +nodeName ;
+    fetch(url).then();
+    return false;
+}
+
+function replacer_for_chain(key, value) {
+  if (key == "memPool" || key == "currentNodeUrl" || key == "networkNodes") {
+    return undefined;
+  }
+
+  if (key == 'index'){
+    const a ="cccccccccccccccccccccc";
+    const b = a + value;
+    return b;
+  }
+
+  if (key == 'previousBlockHash'){
+    const a ="cccccccccccccccccccccc";
+    const b = value + a;
+    return b;
+  }
+  return value;
+}
+
+function replacer_erase_(key, value) {
+  if (key === "chain") {
+    return undefined;
+  }
+  return value;
+}
+
+function replacer_each(key, value) {
+  if (key === "chain") {
+    return undefined;
+  }
+  return value;
+}
+
+function cuttingFunc(data){
+  let i = 0;
+  let rest = '<div class="aaa">';
+//let rest =\` <div class='aaa'>\`;
+  while(data.chain[i] != undefined){
+    rest += "-------------------------------" + '<br>';
+    rest += JSON.stringify(data.chain[i],null,4);
+    i++;
+    rest += '<br>' + "-------------------------------" + '<br>';
+  }
+    rest +="</div>" + "               |" +"<br>"+ "               |" +"<br>"+ "               |" +"<br>";
+  return rest;
+}
+
+function chainData(){
+let obj = "";
+let rest = "";
+let ttt = ""; 
+    fetch('http://localhost:3001/blockchain').then(function(response){
+    response.json().then(function(data){
+      console.log(data.chain);
+      console.log(data.memPool);
+      //obj = JSON.parse(data);
+      //$('#arti').val(JSON.stringify(obj, null, 4));
+      //alert(Object.values(obj));
+
+      rest = cuttingFunc(data);
+
+      //rest = JSON.stringify(data,replacer_for_chain,4);
+      console.log(rest);
+
+      document.getElementById('arti').innerHTML = "<pre><code>"+rest+"</code></pre>";
+    })
+  })
+}
+
+
+
+// fetch('http://localhost:3001/blockchain').then(function(response){
+//     ttt = response.body;
+//     rest = JSON.parse(ttt);
+//     obj = JSON.stringify(obj,null,6);
+//     document.querySelector('article').innerHTML = obj;
+//   })
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
            
 
@@ -182,50 +276,38 @@ var linecount = 1;
         </script>
       </head>
       <body>
-        <header id="Head"><a href="/" style="color:white">Test version</a></header>
+        <header id="Head"><a href="/" style="color:white">Blockchain Manager</a></header>
         <div id="setgrid">
           <div >
             <h2>1.Device</h2>
             ${tem1}
             <h2>2.Group</h2>
             ${tem2}
+
+
           </div>
 
-<div>
-  <svg id = "svg1" width="1000" height="1000" xmlns="http://w3.org/2000/svg"version="1.1"viewbox="0 0 1000 1000">
-
-          <foreignobject>
-          <div 
-           id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
-          ${tem3}
-          </div>
-          </foreignobject>
-  </svg>
-</div>          
           <div>
-            <form action="setting_process" method="post">
-              <fieldset>
-                <legend>Group Setting</legend>
-                Group Name : <input type="text" name="groupname" placeholder="groupname">
-                Memo : 
-                <textarea name="description" placeholder="description"></textarea>
-                <p>
-                <div>
-                  <input type="checkbox" id="switch" name="ON_OFF">ON_OFF</input>
-                </div>
-                <div>
-                  <input type="checkbox" id="bright" name="Brightness">Brightness</input>
-                </div>
-                <div>
-                  <input type="checkbox" id="temperature" name="Temperature">Temperature</input>
-                </div>  
-                </p>
-                <span><button type="button" class="btn-gradient orange" onclick="change()">save</button></span>
-                <span><button  type="submit" class="btn-gradient green">submit</button></span>
-                <input type="hidden" id="qwer" name="consist" value="">
-                <input type="hidden" id="forstatus" name="status" value="">
-              </fieldset>
-            </form>
+            <svg id = "svg1" width="800" height="400" xmlns="http://w3.org/2000/svg"version="1.1"viewbox="0 0 800 400">
+
+                    <foreignobject>
+                    <div 
+                     id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    ${tem3}
+                    </div>
+                    </foreignobject>
+            </svg>
+          </div>   
+
+          <div>
+            <h2>3.Information</h2>
+            <div id="arti">
+            </div>
+            <input type="button" value="fetch" onclick="chainData()">
+
+<form action="Node_setting" id="frm">
+  <input type="hidden" id="nN" value="">
+</form>
           </div>
         </div>
       </body>
@@ -285,10 +367,11 @@ template_Page_Main:function(title, list,modify, body, control,glst){
     .leftgrid{
       border : 1px solid gray;
     }
+
     </style>
   </head>
   <body>
-    <header id="Head"><a href="/" style="color:white">Test version</a></header>
+    <header id="Head"><a href="/" style="color:white">blockchain Management</a></header>
     <div id="grid">
     <div class="leftgrid">
       <h2>1.Device</h2>

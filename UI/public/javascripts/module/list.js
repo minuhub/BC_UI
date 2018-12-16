@@ -10,6 +10,7 @@ module.exports = {
     }
     i = i + 1;
   }
+
   list = list+'</ul>';
   return list;
 },
@@ -37,10 +38,12 @@ template_List_Set_Device : function(filelist){
     if(filelist[i].substr(0,4)!='GR__'&& filelist[i] !='.DS_Store'){
       list = list + `
       <div id="${filelist[i]}" draggable="true" ondragstart="drag(event)" 
-      ondragend="isChanged('${filelist[i]}')" >
+      ondragend="isChanged('${filelist[i]}')"  
+      //start Node_Server
+      ondblclick="startNode('${filelist[i]}')" >
           <div class="setlistgrid">
             <div style="background-color : blue" 
-              onmouseup="line_end('end${filelist[i]}')" ></div>
+              onmouseup="line_end('${filelist[i]}')" ></div>
             <div style="position: static; top: 11px; left: 11px;  "class="btn-gradient cyan large" >${filelist[i]}</div>
             <div style="background-color : blue"
               onclick="line_start('start${filelist[i]}')"></div>
@@ -52,6 +55,9 @@ template_List_Set_Device : function(filelist){
   }
   return list;
 },
+
+
+
 template_List_Set_Group : function(filelist){
   var list = '';
   var i = 0;
@@ -68,7 +74,5 @@ template_List_Set_Group : function(filelist){
   }
   // list = list+'</ul>';
   return list;
-
 }
-
 }

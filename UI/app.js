@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var rp = require('request-promise');
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
@@ -66,13 +67,12 @@ console.log("pn : "+pathname);
 });
 
 app.get('/', function(request, response) { 
-	_url = request.url;
+  _url = request.url;
 console.log("url : "+_url);
 	queryData = url.parse(_url, true).query;
 
 	//console.log("here qD : ",queryData.id);
       if(queryData.id === undefined){
-      	console.log("in");
         //Page : Main _ index page
         fs.readdir('./public/data', function(error, filelist){
         	console.log("fl is : "+filelist);
@@ -142,7 +142,7 @@ console.log("url : "+_url);
 
 });
 
-
+//to see inside group node
 app.get('/status', function(request, response) { 
         fs.readdir('./public/data', function(error, filelist){
           fs.readFile(`public/data/${queryData.id}`, 'utf8', function(err, description){
@@ -162,6 +162,71 @@ app.get('/status', function(request, response) {
           });
         });
 });
+
+app.use('/Node_setting/:nodeName', function(request, response) { 
+  let filteredName = path.parse(request.params.nodeName).base; 
+  //console.log("here is Node_setting");
+  //console.log(filteredName);
+
+let abc = process.cwd();
+console.log("here abc is " +abc);
+let tp = `  osascript -e 'tell application "Terminal" to do script "cd ${abc}/../blockchain;npm run ${filteredName}"'`;
+
+
+  //let commandString = "\"npm run " + filteredName + "\"";
+//let commandString = "../blockchain/";
+  var exec = require('child_process').exec;
+// exec("open -a terminal " + tp, function (err, stdout, stderr) {
+  exec(tp, function (err, stdout, stderr) {
+      //console.log('stdout: ' + stdout);
+      //console.log('stderr: ' + stderr);
+      if (err !== null) {
+          console.log('error: ' + err);
+      }
+  })
+});
+
+app.use('/Node_connecting/:nodeName', function(request, response) { 
+  let filteredName = path.parse(request.params.nodeName).base; 
+  console.log("here fileterName : "+filteredName);
+  let portNum ="3001";
+
+  switch(filteredName){
+    case "temperature":
+      portNum = "3001";
+      break;
+    case "humidity":
+      portNum = "3002";
+      break;
+    case "wind":
+      portNum = "3003";
+      break;
+    case "condition":
+      portNum = "3004";
+  }
+  
+  // if(filteredName === "humidity"){
+  //   portNum = "3002";
+  // }
+  // else if(filteredName === "wind"){
+  //   portNum = "3003";
+  // }
+  // else if(filteredName === "condition"){
+  //   portNum = "3004";
+  // }
+  console.log("portNum is : "+portNum);
+  console.log("newNodeURL : "+`http://localhost:${portNum}`);
+
+const requestOptions = {
+            uri: "http://localhost:3001/register-and-broadcast-node",
+            method: 'POST',
+            body: { newNodeUrl: `http://localhost:${portNum}`},
+            json: true
+        };
+       rp(requestOptions);
+
+});
+
 
 
 app.get('/setting', function(request, response) { 
@@ -251,7 +316,7 @@ app.post('/create_process', function(request, response) {
       });
 });
 app.get('/update', function(request, response) { 
-      fs.readdir('./data', function(error, filelist){
+      fs.readdir('./public/data', function(error, filelist){
         fs.readFile(`./public/data/${queryData.id}`, 'utf8', function(err, description){
           var title = queryData.id;
           var list = tpl.template_List_Device(filelist);
@@ -278,12 +343,13 @@ app.get('/update', function(request, response) {
             </form>
             `,'',
             '','');
+
           response.writeHead(200);
           response.end(template);
         });
       });
 });
-app.get('/update_process', function(request, response) { 
+app.post('/update_process', function(request, response) { 
       var body = '';
       request.on('data', function(data){
           body = body + data;
@@ -302,7 +368,7 @@ app.get('/update_process', function(request, response) {
           });
       });
 });
-app.get('/delete_process', function(request, response) { 
+app.post('/delete_process', function(request, response) { 
       var body = '';
       request.on('data', function(data){
           body = body + data;
@@ -310,7 +376,7 @@ app.get('/delete_process', function(request, response) {
       request.on('end', function(){
           var post = qs.parse(body);
           var id = post.id;
-          fs.unlink(`data/${id}`, function(error){
+          fs.unlink(`./public/data/${id}`, function(error){
             response.writeHead(302, {Location: `/`});
             response.end();
           })

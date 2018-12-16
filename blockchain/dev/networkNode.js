@@ -16,6 +16,15 @@ const device = new Blockchain();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// // CORS 설정
+// app.use(cors());
+
+app.all('/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 // min~max까지 랜덤 수 생성.
 var generateRandom = function(min, max){
     var ranNum = Math.floor(Math.random()*(max-min+1))+min;
